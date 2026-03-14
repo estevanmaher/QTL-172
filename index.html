@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>QTL K172 — Pro Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Tajawal:wght@300;400;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --card: rgba(10, 10, 10, 0.8);
+      --card-solid: #0a0a0a;
+      --accent: #00d4ff;
+      --accent-glow: rgba(0, 212, 255, 0.3);
+      --text: #ffffff;
+      --muted: #888888;
+      --border: #1a1a1a;
+      --gradient: linear-gradient(135deg, #0f0f0f 0%, #000000 100%);
+      --best: #00ffa3;
+      --panel-max: 1280px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { height: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: 'Outfit', 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    [lang="ar"] body { font-family: 'Tajawal', sans-serif; }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 255, 163, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .wrap {
+      width: 100%;
+      max-width: var(--panel-max);
+      padding: clamp(12px, 3vw, 40px);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(16px, 4vw, 32px);
+      align-items: start;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: clamp(16px, 4vw, 40px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+    h1 { 
+      margin: 0 0 16px; font-size: clamp(28px, 6vw, 42px); font-weight: 800; 
+      letter-spacing: -0.03em;
+      background: linear-gradient(to right, #fff, #555);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h2 { margin: 24px 0 12px; font-size: clamp(15px, 3.5vw, 17px); color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+    p { color: var(--muted); line-height: 1.6; font-size: clamp(14px, 2.5vw, 16px); font-weight: 300; max-width: 600px; }
+    .board-shell { position: relative; width: 100%; max-width: 440px; margin: 20px auto; }
+    .board {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(8px, 2vw, 12px);
+      background: #050505; padding: clamp(10px, 2.5vw, 14px); border-radius: 24px; width: 100%;
+      border: 1px solid var(--border); box-shadow: inset 0 4px 20px rgba(0,0,0,0.5);
+      direction: ltr;
+    }
+    /* Set height based on width to maintain aspect ratio on board */
+    .cell {
+      aspect-ratio: 1 / 1; width: 100%; border: 0; border-radius: 12px;
+      background: #111; color: var(--text); font-size: clamp(18px, 5vw, 30px); font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.02);
+      user-select: none;
+    }
+    .cell:hover { transform: scale(1.02); background: #1a1a1a; }
+    .cell:active { transform: scale(0.96); }
+    .cell.v1 { color: #fff; background: #111; }
+    .cell.v2 { color: var(--accent); background: #111; text-shadow: 0 0 10px var(--accent-glow); }
+    .cell.v3 { color: #00ffa3; background: #111; text-shadow: 0 0 10px rgba(0,255,163,0.3); }
+    .cell.v4 { color: #ff007a; background: #111; text-shadow: 0 0 10px rgba(255,0,122,0.3); }
+    .cell.v5 { color: #7a00ff; background: #111; text-shadow: 0 0 10px rgba(122,0,255,0.3); }
+    .cell.v6 { color: #ffbc00; background: #111; text-shadow: 0 0 10px rgba(255,188,0,0.3); }
+    .cell.v7, .cell.v8, .cell.v9, .cell.v10, .cell.v11, .cell.v12 { background: var(--accent); color: #000; box-shadow: 0 0 25px var(--accent-glow); }
+    .moving-tile {
+      position: absolute; display: flex; align-items: center; justify-content: center;
+      border-radius: 12px; font-size: clamp(18px, 5vw, 30px); font-weight: 800;
+      color: var(--text); background: #111; border: 1px solid rgba(255,255,255,0.1);
+      z-index: 10; transition: transform 260ms cubic-bezier(.22, .9, .32, 1), opacity 260ms ease;
+    }
+    .stats { background: #0a0a0a; padding: clamp(16px, 3.5vw, 24px); border-radius: 18px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin: 16px 0; font-size: 14px; }
+    button { background: #111; color: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    button:hover { background: #1a1a1a; border-color: #444; }
+    button#btnAnalyze { background: var(--accent); color: #000; border: none; box-shadow: 0 8px 24px var(--accent-glow); }
+    button#btnAnalyze:hover { transform: translateY(-2px); box-shadow: 0 12px 32px var(--accent-glow); }
+    button#btnLang { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); border-radius: 10px; padding: 8px 14px; font-size: 13px; }
+    .controls { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 24px; }
+    @media (min-width: 480px) { .controls { grid-template-columns: repeat(2, 1fr); } }
+    .picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; direction: ltr; }
+    @media (min-width: 380px) { .picker { grid-template-columns: repeat(6, 1fr); } }
+    .pick.active { border-color: var(--accent); color: var(--accent); box-shadow: inset 0 0 10px var(--accent-glow); }
+    .direction-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
+    .direction-card-arrow { width: 70px; height: 70px; border-radius: 20px; background: rgba(0, 212, 255, 0.05); border: 1px solid var(--accent); font-size: 32px; display: flex; align-items: center; justify-content: center; color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); margin: 8px 0; }
+    .score-row { display: flex; justify-content: space-between; padding: 12px 16px; background: rgba(255,255,255,0.02); border-radius: 12px; margin-bottom: 8px; font-size: 14px; border: 1px solid transparent; direction: ltr !important; }
+    .score-row.best { background: rgba(0, 255, 163, 0.05); border-color: rgba(0, 255, 163, 0.2); color: #00ffa3; font-weight: 700; }
+    .config-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 20px 0; }
+    @media (min-width: 600px) { .config-grid { grid-template-columns: repeat(2, 1fr); } }
+    .config-field input { background: #0a0a0a; border: 1px solid var(--border); border-radius: 12px; padding: 12px; color: #fff; font: inherit; width: 100%; direction: ltr; }
+    .toggle-row { display: flex; align-items: center; gap: 12px; background: #0a0a0a; padding: 14px; border-radius: 16px; border: 1px solid var(--border); font-size: 14px; color: var(--muted); cursor: pointer; }
+    .toggle-row input { accent-color: var(--accent); width: 18px; height: 18px; }
+    @media (min-width: 900px) {
+      .wrap { grid-template-columns: 1.2fr 0.8fr; }
+      .controls { grid-template-columns: repeat(4, 1fr); }
+      .controls button#btnAnalyze { grid-column: span 2; }
+      .config-grid { grid-template-columns: repeat(3, 1fr); }
+      .picker { grid-template-columns: repeat(12, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="panel">
+      <header>
+        <h1 data-i18n="title">QTL K172</h1>
+        <button id="btnLang" data-i18n="langToggle">العربية</button>
+      </header>
+      <p data-i18n="description">C++ expectimax solver compiled to WebAssembly. The board uses exponent-style values (1, 2, 3...) where merging equal tiles increments the value by one.</p>
+      
+      <div class="board-shell" id="boardShell">
+        <div class="board" id="board"></div>
+        <div class="move-layer" id="moveLayer" aria-hidden="true"></div>
+      </div>
+
+      <div class="stats">
+        <div><strong data-i18n="statusTitle">Status:</strong> <span id="status" class="muted" data-i18n="statusLoading">Loading…</span></div>
+        <div><strong data-i18n="emptiesLabel">Empties:</strong> <span id="empties">16</span></div>
+      </div>
+
+      <h2 data-i18n="tilePickerTitle">Tile picker</h2>
+      <div class="picker" id="tilePicker"></div>
+
+      <div class="controls">
+        <button id="btnMode" data-i18n="btnModePlay">Switch to Play Mode</button>
+        <button id="btnAnalyze" data-i18n="btnAnalyze">Analyze</button>
+        <button id="btnStep" data-i18n="btnStep">Step best move</button>
+        <button id="btnReset" data-i18n="btnReset">Reset</button>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <label class="toggle-row">
+          <input type="checkbox" id="toggleAutoStepAfterSpawn" checked />
+          <span data-i18n="toggleAuto">After placing the next tile, automatically analyze and play the next move</span>
+        </label>
+      </div>
+
+      <h2 data-i18n="nextTileTitle">Next tile after move</h2>
+      <div class="picker" id="tileAfterMove"></div>
+    </section>
+    
+    <section class="panel">
+      <h2 data-i18n="analysisTitle">Analysis</h2>
+      <div><strong data-i18n="chosenMoveTitle">Chosen move:</strong> <span id="chosenMove">—</span></div>
+      <div class="direction-card" aria-live="polite">
+        <div class="direction-card-label" data-i18n="playDirectionLabel">Play this direction</div>
+        <div class="direction-card-value">
+          <div class="direction-card-arrow" id="selectedDirectionArrow">—</div>
+          <div class="direction-card-text" id="selectedDirectionText" data-i18n="waiting">Waiting</div>
+        </div>
+      </div>
+
+      <div class="config-grid">
+        <div class="config-field">
+          <label for="scoreWeightInput" data-i18n="scoreWeightLabel">SCORE_WEIGHT</label>
+          <input id="scoreWeightInput" type="number" step="0.1" value="1.0" />
+        </div>
+        <div class="config-field">
+          <label for="movePenaltyInput" data-i18n="movePenaltyLabel">MOVE_PENALTY</label>
+          <input id="movePenaltyInput" type="number" step="100" value="5000" />
+        </div>
+        <div class="config-field">
+          <label for="timeLimitMsInput" data-i18n="timeLimitLabel">TIME_LIMIT_MS</label>
+          <input id="timeLimitMsInput" type="number" min="0" step="10" value="70" />
+        </div>
+      </div>
+      <div class="config-help" data-i18n="configHelp">These values are applied immediately on Analyze and Step best move. Setting TIME_LIMIT_MS to 0 disables the time limit.</div>
+
+      <div><strong data-i18n="searchLabel">Search:</strong> <span id="perf">—</span></div>
+      <div id="scores"></div>
+
+      <h2 data-i18n="notesTitle">Notes</h2>
+      <p data-i18n="notes1">Setup mode lets you build any board position by clicking cells. In play mode, Step best move applies the solver's move, then waits for you to place the next tile manually.</p>
+      <p data-i18n="notes2">Under the hood the solver uses bitboards, precomputed transitions, expectimax, a transposition table, move ordering, and a strong heuristic (gradient, smoothness, monotonicity, merge potential, corner anchoring, snake bonus, and dedicated endgame scoring).</p>
+    </section>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
